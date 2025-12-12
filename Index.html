@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeProductive Eisenhower</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 2rem; background:#f5f5f5; }
+    h1 { margin-bottom: 0.5rem; }
+    textarea { width: 100%; max-width: 700px; height: 120px; }
+    button { margin-top: 1rem; padding: 0.6rem 1.2rem; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; max-width: 900px; }
+    .box { background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .box h2 { margin-top: 0; font-size: 1rem; }
+    ul { padding-left: 1.2rem; }
+  </style>
+</head>
+<body>
+  <h1>BeProductive Eisenhower</h1>
+  <p>Pega tus tareas (una por línea) y pulsa “Clasificar”.</p>
+
+  <textarea id="tasks" placeholder="Terminar tesis&#10;Buscar trabajo&#10;Ideas para posts..."></textarea>
+  <br>
+  <button onclick="classify()">Clasificar</button>
+
+  <div class="grid">
+    <div class="box">
+      <h2>Q1 · Hacer ahora</h2>
+      <ul id="q1"></ul>
+    </div>
+    <div class="box">
+      <h2>Q2 · Planificar</h2>
+      <ul id="q2"></ul>
+    </div>
+    <div class="box">
+      <h2>Q3 · Delegar / automatizar</h2>
+      <ul id="q3"></ul>
+    </div>
+    <div class="box">
+      <h2>Q4 · Eliminar / aparcar</h2>
+      <ul id="q4"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Versión front-end sin backend: mismas reglas simples en JS
+    function simpleRules(task) {
+      const t = task.toLowerCase();
+      if (t.includes("tesis") || t.includes("entregar") || t.includes("deadline")) return "q1";
+      if (t.includes("aplicar") || t.includes("apply") || t.includes("trabajo") || t.includes("job")) return "q1";
+      if (t.includes("escribir") || t.includes("write") || t.includes("leer") || t.includes("read") || t.includes("paper")) return "q2";
+      if (t.includes("email") || t.includes("formatear") || t.includes("admin") || t.includes("limpiar")) return "q3";
+      return "q4";
+    }
+
+    function classify() {
+      const lines = document.getElementById("tasks").value
+        .split("\n")
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+
+      const buckets = { q1: [], q2: [], q3: [], q4: [] };
+      for (const task of lines) {
+        const key = simpleRules(task);
+        buckets[key].push(task);
+      }
+
+      ["q1","q2","q3","q4"].forEach(id => {
+        const ul = document.getElementById(id);
+        ul.innerHTML = "";
+        buckets[id].forEach(task => {
+          const li = document.createElement("li");
+          li.textContent = task;
+          ul.appendChild(li);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
